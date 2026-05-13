@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-22T23:39:33+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Red Hat, Inc.)"
+    date = "2026-05-12T21:35:13+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 21.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class CategoryMapperImpl implements CategoryMapper {
@@ -25,15 +25,15 @@ public class CategoryMapperImpl implements CategoryMapper {
 
         Category.CategoryBuilder category = Category.builder();
 
-        category.name( request.getName() );
-        category.slug( request.getSlug() );
-        category.description( request.getDescription() );
         category.active( request.getActive() );
+        category.description( request.getDescription() );
         category.displayOrder( request.getDisplayOrder() );
         category.imageUrl( request.getImageUrl() );
-        category.metaTitle( request.getMetaTitle() );
         category.metaDescription( request.getMetaDescription() );
         category.metaKeywords( request.getMetaKeywords() );
+        category.metaTitle( request.getMetaTitle() );
+        category.name( request.getName() );
+        category.slug( request.getSlug() );
 
         return category.build();
     }
@@ -48,18 +48,18 @@ public class CategoryMapperImpl implements CategoryMapper {
 
         categoryResponse.parentId( categoryParentId( category ) );
         categoryResponse.parentName( categoryParentName( category ) );
-        categoryResponse.id( category.getId() );
-        categoryResponse.name( category.getName() );
-        categoryResponse.slug( category.getSlug() );
-        categoryResponse.description( category.getDescription() );
-        categoryResponse.children( toResponseList( category.getChildren() ) );
         categoryResponse.active( category.getActive() );
+        categoryResponse.children( toResponseList( category.getChildren() ) );
+        categoryResponse.createdAt( category.getCreatedAt() );
+        categoryResponse.description( category.getDescription() );
         categoryResponse.displayOrder( category.getDisplayOrder() );
+        categoryResponse.id( category.getId() );
         categoryResponse.imageUrl( category.getImageUrl() );
-        categoryResponse.metaTitle( category.getMetaTitle() );
         categoryResponse.metaDescription( category.getMetaDescription() );
         categoryResponse.metaKeywords( category.getMetaKeywords() );
-        categoryResponse.createdAt( category.getCreatedAt() );
+        categoryResponse.metaTitle( category.getMetaTitle() );
+        categoryResponse.name( category.getName() );
+        categoryResponse.slug( category.getSlug() );
         categoryResponse.updatedAt( category.getUpdatedAt() );
 
         return categoryResponse.build();
@@ -85,17 +85,11 @@ public class CategoryMapperImpl implements CategoryMapper {
             return;
         }
 
-        if ( request.getName() != null ) {
-            category.setName( request.getName() );
-        }
-        if ( request.getSlug() != null ) {
-            category.setSlug( request.getSlug() );
+        if ( request.getActive() != null ) {
+            category.setActive( request.getActive() );
         }
         if ( request.getDescription() != null ) {
             category.setDescription( request.getDescription() );
-        }
-        if ( request.getActive() != null ) {
-            category.setActive( request.getActive() );
         }
         if ( request.getDisplayOrder() != null ) {
             category.setDisplayOrder( request.getDisplayOrder() );
@@ -103,14 +97,20 @@ public class CategoryMapperImpl implements CategoryMapper {
         if ( request.getImageUrl() != null ) {
             category.setImageUrl( request.getImageUrl() );
         }
-        if ( request.getMetaTitle() != null ) {
-            category.setMetaTitle( request.getMetaTitle() );
-        }
         if ( request.getMetaDescription() != null ) {
             category.setMetaDescription( request.getMetaDescription() );
         }
         if ( request.getMetaKeywords() != null ) {
             category.setMetaKeywords( request.getMetaKeywords() );
+        }
+        if ( request.getMetaTitle() != null ) {
+            category.setMetaTitle( request.getMetaTitle() );
+        }
+        if ( request.getName() != null ) {
+            category.setName( request.getName() );
+        }
+        if ( request.getSlug() != null ) {
+            category.setSlug( request.getSlug() );
         }
     }
 

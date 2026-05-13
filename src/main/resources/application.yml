@@ -62,9 +62,8 @@ spring:
           jwk-set-uri: ${JWT_JWK_SET_URI:http://localhost:8180/realms/ecommerce/protocol/openid-connect/certs}
 
   keycloak:
-    resource: ${KEYCLOAK_RESOURCE:ecommerce-backend}
-    credentials:
-      secret: ${KEYCLOAK_CLIENT_SECRET:fhIrOyzOYvu9dCAqQKWFXQrQG37jzXOO}
+    client-id: ${KEYCLOAK_CLIENT_ID:ecommerce-backend}
+    client-secret: ${KEYCLOAK_CLIENT_SECRET}
 
   # File Upload Configuration
   servlet:

@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-22T23:39:33+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Red Hat, Inc.)"
+    date = "2026-05-12T21:35:13+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 21.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class ProductImageMapperImpl implements ProductImageMapper {
@@ -24,10 +24,10 @@ public class ProductImageMapperImpl implements ProductImageMapper {
 
         ProductImage.ProductImageBuilder productImage = ProductImage.builder();
 
-        productImage.imageUrl( request.getImageUrl() );
         productImage.altText( request.getAltText() );
-        productImage.isPrimary( request.getIsPrimary() );
         productImage.displayOrder( request.getDisplayOrder() );
+        productImage.imageUrl( request.getImageUrl() );
+        productImage.isPrimary( request.getIsPrimary() );
 
         return productImage.build();
     }
@@ -40,12 +40,12 @@ public class ProductImageMapperImpl implements ProductImageMapper {
 
         ProductImageResponse.ProductImageResponseBuilder productImageResponse = ProductImageResponse.builder();
 
+        productImageResponse.altText( image.getAltText() );
+        productImageResponse.createdAt( image.getCreatedAt() );
+        productImageResponse.displayOrder( image.getDisplayOrder() );
         productImageResponse.id( image.getId() );
         productImageResponse.imageUrl( image.getImageUrl() );
-        productImageResponse.altText( image.getAltText() );
         productImageResponse.isPrimary( image.getIsPrimary() );
-        productImageResponse.displayOrder( image.getDisplayOrder() );
-        productImageResponse.createdAt( image.getCreatedAt() );
 
         return productImageResponse.build();
     }

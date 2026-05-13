@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-22T23:39:33+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Red Hat, Inc.)"
+    date = "2026-05-12T21:35:13+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 21.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class ProductVariantMapperImpl implements ProductVariantMapper {
@@ -24,17 +24,17 @@ public class ProductVariantMapperImpl implements ProductVariantMapper {
 
         ProductVariant.ProductVariantBuilder productVariant = ProductVariant.builder();
 
-        productVariant.sku( request.getSku() );
-        productVariant.size( request.getSize() );
-        productVariant.color( request.getColor() );
-        productVariant.material( request.getMaterial() );
-        productVariant.style( request.getStyle() );
-        productVariant.stockQuantity( request.getStockQuantity() );
-        productVariant.priceAdjustment( request.getPriceAdjustment() );
-        productVariant.imageUrl( request.getImageUrl() );
-        productVariant.weight( request.getWeight() );
-        productVariant.barcode( request.getBarcode() );
         productVariant.available( request.getAvailable() );
+        productVariant.barcode( request.getBarcode() );
+        productVariant.color( request.getColor() );
+        productVariant.imageUrl( request.getImageUrl() );
+        productVariant.material( request.getMaterial() );
+        productVariant.priceAdjustment( request.getPriceAdjustment() );
+        productVariant.size( request.getSize() );
+        productVariant.sku( request.getSku() );
+        productVariant.stockQuantity( request.getStockQuantity() );
+        productVariant.style( request.getStyle() );
+        productVariant.weight( request.getWeight() );
 
         return productVariant.build();
     }
@@ -47,20 +47,20 @@ public class ProductVariantMapperImpl implements ProductVariantMapper {
 
         ProductVariantResponse.ProductVariantResponseBuilder productVariantResponse = ProductVariantResponse.builder();
 
-        productVariantResponse.id( variant.getId() );
-        productVariantResponse.sku( variant.getSku() );
-        productVariantResponse.size( variant.getSize() );
-        productVariantResponse.color( variant.getColor() );
-        productVariantResponse.material( variant.getMaterial() );
-        productVariantResponse.style( variant.getStyle() );
-        productVariantResponse.stockQuantity( variant.getStockQuantity() );
-        productVariantResponse.priceAdjustment( variant.getPriceAdjustment() );
-        productVariantResponse.imageUrl( variant.getImageUrl() );
-        productVariantResponse.weight( variant.getWeight() );
-        productVariantResponse.barcode( variant.getBarcode() );
         productVariantResponse.available( variant.getAvailable() );
+        productVariantResponse.barcode( variant.getBarcode() );
+        productVariantResponse.color( variant.getColor() );
         productVariantResponse.createdAt( variant.getCreatedAt() );
+        productVariantResponse.id( variant.getId() );
+        productVariantResponse.imageUrl( variant.getImageUrl() );
+        productVariantResponse.material( variant.getMaterial() );
+        productVariantResponse.priceAdjustment( variant.getPriceAdjustment() );
+        productVariantResponse.size( variant.getSize() );
+        productVariantResponse.sku( variant.getSku() );
+        productVariantResponse.stockQuantity( variant.getStockQuantity() );
+        productVariantResponse.style( variant.getStyle() );
         productVariantResponse.updatedAt( variant.getUpdatedAt() );
+        productVariantResponse.weight( variant.getWeight() );
 
         return productVariantResponse.build();
     }

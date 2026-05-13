@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-04-22T23:39:33+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.10 (Red Hat, Inc.)"
+    date = "2026-05-12T21:35:13+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.0.v20260407-0427, environment: Java 21.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class ProductMapperImpl implements ProductMapper {
@@ -34,28 +34,28 @@ public class ProductMapperImpl implements ProductMapper {
 
         Product.ProductBuilder product = Product.builder();
 
-        product.name( request.getName() );
-        product.slug( request.getSlug() );
-        product.description( request.getDescription() );
-        product.shortDescription( request.getShortDescription() );
-        product.price( request.getPrice() );
+        product.barcode( request.getBarcode() );
         product.compareAtPrice( request.getCompareAtPrice() );
         product.costPrice( request.getCostPrice() );
-        product.status( request.getStatus() );
-        product.published( request.getPublished() );
-        product.featured( request.getFeatured() );
-        product.stockQuantity( request.getStockQuantity() );
-        product.sku( request.getSku() );
-        product.barcode( request.getBarcode() );
-        product.weight( request.getWeight() );
-        product.weightUnit( request.getWeightUnit() );
-        product.length( request.getLength() );
-        product.width( request.getWidth() );
-        product.height( request.getHeight() );
+        product.description( request.getDescription() );
         product.dimensionUnit( request.getDimensionUnit() );
-        product.metaTitle( request.getMetaTitle() );
+        product.featured( request.getFeatured() );
+        product.height( request.getHeight() );
+        product.length( request.getLength() );
         product.metaDescription( request.getMetaDescription() );
         product.metaKeywords( request.getMetaKeywords() );
+        product.metaTitle( request.getMetaTitle() );
+        product.name( request.getName() );
+        product.price( request.getPrice() );
+        product.published( request.getPublished() );
+        product.shortDescription( request.getShortDescription() );
+        product.sku( request.getSku() );
+        product.slug( request.getSlug() );
+        product.status( request.getStatus() );
+        product.stockQuantity( request.getStockQuantity() );
+        product.weight( request.getWeight() );
+        product.weightUnit( request.getWeightUnit() );
+        product.width( request.getWidth() );
 
         return product.build();
     }
@@ -68,36 +68,36 @@ public class ProductMapperImpl implements ProductMapper {
 
         ProductResponse.ProductResponseBuilder productResponse = ProductResponse.builder();
 
-        productResponse.id( product.getId() );
-        productResponse.name( product.getName() );
-        productResponse.slug( product.getSlug() );
-        productResponse.description( product.getDescription() );
-        productResponse.shortDescription( product.getShortDescription() );
-        productResponse.price( product.getPrice() );
+        productResponse.barcode( product.getBarcode() );
+        productResponse.brand( brandMapper.toResponse( product.getBrand() ) );
+        productResponse.category( categoryMapper.toResponse( product.getCategory() ) );
         productResponse.compareAtPrice( product.getCompareAtPrice() );
         productResponse.costPrice( product.getCostPrice() );
-        productResponse.category( categoryMapper.toResponse( product.getCategory() ) );
-        productResponse.brand( brandMapper.toResponse( product.getBrand() ) );
-        productResponse.status( product.getStatus() );
-        productResponse.published( product.getPublished() );
-        productResponse.featured( product.getFeatured() );
-        productResponse.stockQuantity( product.getStockQuantity() );
-        productResponse.sku( product.getSku() );
-        productResponse.barcode( product.getBarcode() );
-        productResponse.weight( product.getWeight() );
-        productResponse.weightUnit( product.getWeightUnit() );
-        productResponse.length( product.getLength() );
-        productResponse.width( product.getWidth() );
-        productResponse.height( product.getHeight() );
+        productResponse.createdAt( product.getCreatedAt() );
+        productResponse.description( product.getDescription() );
         productResponse.dimensionUnit( product.getDimensionUnit() );
-        productResponse.metaTitle( product.getMetaTitle() );
+        productResponse.featured( product.getFeatured() );
+        productResponse.height( product.getHeight() );
+        productResponse.id( product.getId() );
+        productResponse.images( productImageMapper.toResponseList( product.getImages() ) );
+        productResponse.length( product.getLength() );
         productResponse.metaDescription( product.getMetaDescription() );
         productResponse.metaKeywords( product.getMetaKeywords() );
-        productResponse.images( productImageMapper.toResponseList( product.getImages() ) );
-        productResponse.variants( productVariantMapper.toResponseList( product.getVariants() ) );
-        productResponse.createdAt( product.getCreatedAt() );
-        productResponse.updatedAt( product.getUpdatedAt() );
+        productResponse.metaTitle( product.getMetaTitle() );
+        productResponse.name( product.getName() );
+        productResponse.price( product.getPrice() );
+        productResponse.published( product.getPublished() );
         productResponse.publishedAt( product.getPublishedAt() );
+        productResponse.shortDescription( product.getShortDescription() );
+        productResponse.sku( product.getSku() );
+        productResponse.slug( product.getSlug() );
+        productResponse.status( product.getStatus() );
+        productResponse.stockQuantity( product.getStockQuantity() );
+        productResponse.updatedAt( product.getUpdatedAt() );
+        productResponse.variants( productVariantMapper.toResponseList( product.getVariants() ) );
+        productResponse.weight( product.getWeight() );
+        productResponse.weightUnit( product.getWeightUnit() );
+        productResponse.width( product.getWidth() );
 
         return productResponse.build();
     }
@@ -122,20 +122,8 @@ public class ProductMapperImpl implements ProductMapper {
             return;
         }
 
-        if ( request.getName() != null ) {
-            product.setName( request.getName() );
-        }
-        if ( request.getSlug() != null ) {
-            product.setSlug( request.getSlug() );
-        }
-        if ( request.getDescription() != null ) {
-            product.setDescription( request.getDescription() );
-        }
-        if ( request.getShortDescription() != null ) {
-            product.setShortDescription( request.getShortDescription() );
-        }
-        if ( request.getPrice() != null ) {
-            product.setPrice( request.getPrice() );
+        if ( request.getBarcode() != null ) {
+            product.setBarcode( request.getBarcode() );
         }
         if ( request.getCompareAtPrice() != null ) {
             product.setCompareAtPrice( request.getCompareAtPrice() );
@@ -143,23 +131,53 @@ public class ProductMapperImpl implements ProductMapper {
         if ( request.getCostPrice() != null ) {
             product.setCostPrice( request.getCostPrice() );
         }
-        if ( request.getStatus() != null ) {
-            product.setStatus( request.getStatus() );
+        if ( request.getDescription() != null ) {
+            product.setDescription( request.getDescription() );
         }
-        if ( request.getPublished() != null ) {
-            product.setPublished( request.getPublished() );
+        if ( request.getDimensionUnit() != null ) {
+            product.setDimensionUnit( request.getDimensionUnit() );
         }
         if ( request.getFeatured() != null ) {
             product.setFeatured( request.getFeatured() );
         }
-        if ( request.getStockQuantity() != null ) {
-            product.setStockQuantity( request.getStockQuantity() );
+        if ( request.getHeight() != null ) {
+            product.setHeight( request.getHeight() );
+        }
+        if ( request.getLength() != null ) {
+            product.setLength( request.getLength() );
+        }
+        if ( request.getMetaDescription() != null ) {
+            product.setMetaDescription( request.getMetaDescription() );
+        }
+        if ( request.getMetaKeywords() != null ) {
+            product.setMetaKeywords( request.getMetaKeywords() );
+        }
+        if ( request.getMetaTitle() != null ) {
+            product.setMetaTitle( request.getMetaTitle() );
+        }
+        if ( request.getName() != null ) {
+            product.setName( request.getName() );
+        }
+        if ( request.getPrice() != null ) {
+            product.setPrice( request.getPrice() );
+        }
+        if ( request.getPublished() != null ) {
+            product.setPublished( request.getPublished() );
+        }
+        if ( request.getShortDescription() != null ) {
+            product.setShortDescription( request.getShortDescription() );
         }
         if ( request.getSku() != null ) {
             product.setSku( request.getSku() );
         }
-        if ( request.getBarcode() != null ) {
-            product.setBarcode( request.getBarcode() );
+        if ( request.getSlug() != null ) {
+            product.setSlug( request.getSlug() );
+        }
+        if ( request.getStatus() != null ) {
+            product.setStatus( request.getStatus() );
+        }
+        if ( request.getStockQuantity() != null ) {
+            product.setStockQuantity( request.getStockQuantity() );
         }
         if ( request.getWeight() != null ) {
             product.setWeight( request.getWeight() );
@@ -167,26 +185,8 @@ public class ProductMapperImpl implements ProductMapper {
         if ( request.getWeightUnit() != null ) {
             product.setWeightUnit( request.getWeightUnit() );
         }
-        if ( request.getLength() != null ) {
-            product.setLength( request.getLength() );
-        }
         if ( request.getWidth() != null ) {
             product.setWidth( request.getWidth() );
-        }
-        if ( request.getHeight() != null ) {
-            product.setHeight( request.getHeight() );
-        }
-        if ( request.getDimensionUnit() != null ) {
-            product.setDimensionUnit( request.getDimensionUnit() );
-        }
-        if ( request.getMetaTitle() != null ) {
-            product.setMetaTitle( request.getMetaTitle() );
-        }
-        if ( request.getMetaDescription() != null ) {
-            product.setMetaDescription( request.getMetaDescription() );
-        }
-        if ( request.getMetaKeywords() != null ) {
-            product.setMetaKeywords( request.getMetaKeywords() );
         }
     }
 }
