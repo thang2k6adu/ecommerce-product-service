@@ -6,7 +6,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 
 @Configuration
 @ConditionalOnProperty(prefix = "app.search", name = "enabled", havingValue = "true")
-@EnableElasticsearchRepositories(basePackages = "com.ecommerce.productservice.repository")
+@EnableElasticsearchRepositories(basePackages = "com.ecommerce.productservice.modules.search")
 public class ElasticsearchConfig {
     // Spring Boot auto-configuration handles the rest
 }
