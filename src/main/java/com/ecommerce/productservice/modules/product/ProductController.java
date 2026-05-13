@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,7 +48,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getAllProducts(
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -57,7 +58,7 @@ public class ProductController {
     }
 
     @GetMapping("/published")
-    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getPublishedProducts(
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getPublishedProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -67,7 +68,7 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getProductsByCategory(
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategory(
             @PathVariable UUID categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -76,7 +77,7 @@ public class ProductController {
     }
 
     @GetMapping("/brand/{brandId}")
-    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getProductsByBrand(
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByBrand(
             @PathVariable UUID brandId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
@@ -85,7 +86,7 @@ public class ProductController {
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getFeaturedProducts(
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getFeaturedProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         PageResponse<ProductResponse> response = productService.getFeaturedProducts(page, size);
@@ -93,7 +94,7 @@ public class ProductController {
     }
 
     @GetMapping("/price-range")
-    public ResponseEntity<ApiResponse<PageResponse<ProductResponse>>> getProductsByPriceRange(
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByPriceRange(
             @RequestParam BigDecimal minPrice,
             @RequestParam BigDecimal maxPrice,
             @RequestParam(defaultValue = "0") int page,

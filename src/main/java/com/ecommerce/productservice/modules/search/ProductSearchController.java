@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @ConditionalOnProperty(prefix = "app.search", name = "enabled", havingValue = "true")
 @RequestMapping("/api/products")
@@ -18,7 +20,7 @@ public class ProductSearchController {
     private final ProductSearchService productSearchService;
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<PageResponse<ProductDocument>>> searchProducts(
+    public ResponseEntity<ApiResponse<List<ProductDocument>>> searchProducts(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String categoryId,
             @RequestParam(required = false) String brandId,
