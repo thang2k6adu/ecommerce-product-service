@@ -10,6 +10,22 @@ spring:
   application:
     name: product-service
 
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: product-service-cart-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.ecommerce.events
+        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      missing-topics-fatal: false
+
   # PostgreSQL Database Configuration
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5433/productdb}
@@ -90,6 +106,11 @@ app:
     enabled: ${APP_SEARCH_ENABLED:false}
     default-page-size: 20
     max-page-size: 100
+
+# Cart module (same semantics as standalone cart-service)
+cart:
+  session-timeout-minutes: 30
+  max-items-per-cart: 50
 
 # OpenAPI/Swagger configuration
 springdoc:
