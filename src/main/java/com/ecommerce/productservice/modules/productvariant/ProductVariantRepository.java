@@ -8,11 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ProductVariantRepository extends JpaRepository<ProductVariant, UUID> {
+public interface ProductVariantRepository extends JpaRepository<ProductVariantEntity, UUID> {
 
-    List<ProductVariant> findByProductId(UUID productId);
+    List<ProductVariantEntity> findByProductId(UUID productId);
 
-    Optional<ProductVariant> findBySku(String sku);
+    Optional<ProductVariantEntity> findBySku(String sku);
 
     boolean existsBySku(String sku);
 

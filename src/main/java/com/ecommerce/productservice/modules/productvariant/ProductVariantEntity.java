@@ -1,6 +1,6 @@
 package com.ecommerce.productservice.modules.productvariant;
 
-import com.ecommerce.productservice.modules.product.Product;
+import com.ecommerce.productservice.modules.product.ProductEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductVariant {
+public class ProductVariantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,7 +30,7 @@ public class ProductVariant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private ProductEntity product;
 
     @Column(nullable = false, unique = true, length = 100)
     private String sku;

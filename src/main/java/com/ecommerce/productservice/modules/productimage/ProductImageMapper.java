@@ -14,9 +14,9 @@ public interface ProductImageMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "product", ignore = true)
-    ProductImage toEntity(CreateProductImageRequest request);
+    ProductImageEntity toEntity(CreateProductImageRequest request);
 
-    ProductImageResponse toResponse(ProductImage image);
+    ProductImageResponse toResponse(ProductImageEntity image);
 
-    List<ProductImageResponse> toResponseList(List<ProductImage> images);
+    List<ProductImageResponse> toResponseList(List<ProductImageEntity> images);
 }

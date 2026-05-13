@@ -13,34 +13,34 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, UUID>, JpaSpecificationExecutor<Product> {
+public interface ProductRepository extends JpaRepository<ProductEntity, UUID>, JpaSpecificationExecutor<ProductEntity> {
 
-    Optional<Product> findBySlug(String slug);
+    Optional<ProductEntity> findBySlug(String slug);
 
-    Page<Product> findByPublishedTrue(Pageable pageable);
+    Page<ProductEntity> findByPublishedTrue(Pageable pageable);
 
-    Page<Product> findByCategoryId(UUID categoryId, Pageable pageable);
+    Page<ProductEntity> findByCategoryId(UUID categoryId, Pageable pageable);
 
-    Page<Product> findByBrandId(UUID brandId, Pageable pageable);
+    Page<ProductEntity> findByBrandId(UUID brandId, Pageable pageable);
 
-    Page<Product> findByFeaturedTrue(Pageable pageable);
+    Page<ProductEntity> findByFeaturedTrue(Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.published = true AND p.category.id = :categoryId")
-    Page<Product> findPublishedByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
+    @Query("SELECT p FROM ProductEntity p WHERE p.published = true AND p.category.id = :categoryId")
+    Page<ProductEntity> findPublishedByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.published = true AND p.brand.id = :brandId")
-    Page<Product> findPublishedByBrandId(@Param("brandId") UUID brandId, Pageable pageable);
+    @Query("SELECT p FROM ProductEntity p WHERE p.published = true AND p.brand.id = :brandId")
+    Page<ProductEntity> findPublishedByBrandId(@Param("brandId") UUID brandId, Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.published = true AND p.price BETWEEN :minPrice AND :maxPrice")
-    Page<Product> findByPriceRange(@Param("minPrice") BigDecimal minPrice,
+    @Query("SELECT p FROM ProductEntity p WHERE p.published = true AND p.price BETWEEN :minPrice AND :maxPrice")
+    Page<ProductEntity> findByPriceRange(@Param("minPrice") BigDecimal minPrice,
                                     @Param("maxPrice") BigDecimal maxPrice,
                                     Pageable pageable);
 
-    @Query("SELECT p FROM Product p WHERE p.published = true AND p.status = :status")
-    Page<Product> findByStatus(@Param("status") ProductStatus status, Pageable pageable);
+    @Query("SELECT p FROM ProductEntity p WHERE p.published = true AND p.status = :status")
+    Page<ProductEntity> findByStatus(@Param("status") ProductStatus status, Pageable pageable);
 
     boolean existsBySlug(String slug);
 
-    @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.images LEFT JOIN FETCH p.category LEFT JOIN FETCH p.brand WHERE p.id = :id")
-    Optional<Product> findByIdWithDetails(@Param("id") UUID id);
+    @Query("SELECT DISTINCT p FROM ProductEntity p LEFT JOIN FETCH p.images LEFT JOIN FETCH p.category LEFT JOIN FETCH p.brand WHERE p.id = :id")
+    Optional<ProductEntity> findByIdWithDetails(@Param("id") UUID id);
 }

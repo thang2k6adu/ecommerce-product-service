@@ -28,8 +28,8 @@ public class BrandService {
             throw new BadRequestException("Brand slug already exists: " + request.getSlug());
         }
 
-        Brand brand = brandMapper.toEntity(request);
-        Brand savedBrand = brandRepository.save(brand);
+        BrandEntity brand = brandMapper.toEntity(request);
+        BrandEntity savedBrand = brandRepository.save(brand);
 
         log.info("Brand created successfully with ID: {}", savedBrand.getId());
         return brandMapper.toResponse(savedBrand);
@@ -37,34 +37,34 @@ public class BrandService {
 
     @Transactional(readOnly = true)
     public BrandResponse getBrandById(UUID id) {
-        Brand brand = brandRepository.findById(id)
+        BrandEntity brand = brandRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Brand", "id", id));
         return brandMapper.toResponse(brand);
     }
 
     @Transactional(readOnly = true)
     public BrandResponse getBrandBySlug(String slug) {
-        Brand brand = brandRepository.findBySlug(slug)
+        BrandEntity brand = brandRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Brand", "slug", slug));
         return brandMapper.toResponse(brand);
     }
 
     @Transactional(readOnly = true)
     public List<BrandResponse> getAllBrands() {
-        List<Brand> brands = brandRepository.findAll();
+        List<BrandEntity> brands = brandRepository.findAll();
         return brandMapper.toResponseList(brands);
     }
 
     @Transactional(readOnly = true)
     public List<BrandResponse> getActiveBrands() {
-        List<Brand> brands = brandRepository.findByActiveTrue();
+        List<BrandEntity> brands = brandRepository.findByActiveTrue();
         return brandMapper.toResponseList(brands);
     }
 
     public BrandResponse updateBrand(UUID id, CreateBrandRequest request) {
         log.info("Updating brand: {}", id);
 
-        Brand brand = brandRepository.findById(id)
+        BrandEntity brand = brandRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Brand", "id", id));
 
         if (request.getSlug() != null && !request.getSlug().equals(brand.getSlug())) {
@@ -74,7 +74,7 @@ public class BrandService {
         }
 
         brandMapper.updateEntityFromRequest(request, brand);
-        Brand updatedBrand = brandRepository.save(brand);
+        BrandEntity updatedBrand = brandRepository.save(brand);
 
         log.info("Brand updated successfully: {}", id);
         return brandMapper.toResponse(updatedBrand);
@@ -83,7 +83,7 @@ public class BrandService {
     public void deleteBrand(UUID id) {
         log.info("Deleting brand: {}", id);
 
-        Brand brand = brandRepository.findById(id)
+        BrandEntity brand = brandRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Brand", "id", id));
 
         brandRepository.delete(brand);

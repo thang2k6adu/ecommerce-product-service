@@ -15,9 +15,9 @@ public interface ProductVariantMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "product", ignore = true)
-    ProductVariant toEntity(CreateProductVariantRequest request);
+    ProductVariantEntity toEntity(CreateProductVariantRequest request);
 
-    ProductVariantResponse toResponse(ProductVariant variant);
+    ProductVariantResponse toResponse(ProductVariantEntity variant);
 
-    List<ProductVariantResponse> toResponseList(List<ProductVariant> variants);
+    List<ProductVariantResponse> toResponseList(List<ProductVariantEntity> variants);
 }

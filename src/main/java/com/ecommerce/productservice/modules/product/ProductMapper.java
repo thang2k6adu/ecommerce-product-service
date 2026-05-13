@@ -23,11 +23,11 @@ public interface ProductMapper {
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "variants", ignore = true)
-    Product toEntity(CreateProductRequest request);
+    ProductEntity toEntity(CreateProductRequest request);
 
-    ProductResponse toResponse(Product product);
+    ProductResponse toResponse(ProductEntity product);
 
-    List<ProductResponse> toResponseList(List<Product> products);
+    List<ProductResponse> toResponseList(List<ProductEntity> products);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
@@ -38,5 +38,5 @@ public interface ProductMapper {
     @Mapping(target = "brand", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "variants", ignore = true)
-    void updateEntityFromRequest(CreateProductRequest request, @MappingTarget Product product);
+    void updateEntityFromRequest(CreateProductRequest request, @MappingTarget ProductEntity product);
 }

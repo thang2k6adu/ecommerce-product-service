@@ -29,15 +29,15 @@ public class CategoryService {
             throw new BadRequestException("Category slug already exists: " + request.getSlug());
         }
 
-        Category category = categoryMapper.toEntity(request);
+        CategoryEntity category = categoryMapper.toEntity(request);
 
         if (request.getParentId() != null) {
-            Category parent = categoryRepository.findById(request.getParentId())
+            CategoryEntity parent = categoryRepository.findById(request.getParentId())
                     .orElseThrow(() -> new ResourceNotFoundException("Parent category", "id", request.getParentId()));
             category.setParent(parent);
         }
 
-        Category savedCategory = categoryRepository.save(category);
+        CategoryEntity savedCategory = categoryRepository.save(category);
         log.info("Category created successfully with ID: {}", savedCategory.getId());
 
         return categoryMapper.toResponse(savedCategory);
@@ -45,7 +45,7 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryResponse getCategoryById(UUID id) {
-        Category category = categoryRepository.findById(id)
+        CategoryEntity category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
         CategoryResponse response = categoryMapper.toResponse(category);
@@ -59,7 +59,7 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public CategoryResponse getCategoryBySlug(String slug) {
-        Category category = categoryRepository.findBySlug(slug)
+        CategoryEntity category = categoryRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "slug", slug));
 
         CategoryResponse response = categoryMapper.toResponse(category);
@@ -73,19 +73,19 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+        List<CategoryEntity> categories = categoryRepository.findAll();
         return categoryMapper.toResponseList(categories);
     }
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> getActiveCategories() {
-        List<Category> categories = categoryRepository.findByActiveTrue();
+        List<CategoryEntity> categories = categoryRepository.findByActiveTrue();
         return categoryMapper.toResponseList(categories);
     }
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> getRootCategories() {
-        List<Category> categories = categoryRepository.findByParentIsNull();
+        List<CategoryEntity> categories = categoryRepository.findByParentIsNull();
         return categories.stream()
                 .map(category -> {
                     CategoryResponse response = categoryMapper.toResponse(category);
@@ -99,17 +99,17 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public List<CategoryResponse> getCategoryTree() {
-        List<Category> rootCategories = categoryRepository.findRootCategoriesActive();
+        List<CategoryEntity> rootCategories = categoryRepository.findRootCategoriesActive();
         return buildCategoryTree(rootCategories);
     }
 
-    private List<CategoryResponse> buildCategoryTree(List<Category> categories) {
+    private List<CategoryResponse> buildCategoryTree(List<CategoryEntity> categories) {
         return categories.stream()
                 .map(category -> {
                     CategoryResponse response = categoryMapper.toResponse(category);
                     if (!category.getChildren().isEmpty()) {
-                        List<Category> activeChildren = category.getChildren().stream()
-                                .filter(Category::getActive)
+                        List<CategoryEntity> activeChildren = category.getChildren().stream()
+                                .filter(CategoryEntity::getActive)
                                 .collect(Collectors.toList());
                         response.setChildren(buildCategoryTree(activeChildren));
                     }
@@ -121,7 +121,7 @@ public class CategoryService {
     public CategoryResponse updateCategory(UUID id, CreateCategoryRequest request) {
         log.info("Updating category: {}", id);
 
-        Category category = categoryRepository.findById(id)
+        CategoryEntity category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
         if (request.getSlug() != null && !request.getSlug().equals(category.getSlug())) {
@@ -136,12 +136,12 @@ public class CategoryService {
             if (request.getParentId().equals(id)) {
                 throw new BadRequestException("Category cannot be its own parent");
             }
-            Category parent = categoryRepository.findById(request.getParentId())
+            CategoryEntity parent = categoryRepository.findById(request.getParentId())
                     .orElseThrow(() -> new ResourceNotFoundException("Parent category", "id", request.getParentId()));
             category.setParent(parent);
         }
 
-        Category updatedCategory = categoryRepository.save(category);
+        CategoryEntity updatedCategory = categoryRepository.save(category);
         log.info("Category updated successfully: {}", id);
 
         return categoryMapper.toResponse(updatedCategory);
@@ -150,7 +150,7 @@ public class CategoryService {
     public void deleteCategory(UUID id) {
         log.info("Deleting category: {}", id);
 
-        Category category = categoryRepository.findById(id)
+        CategoryEntity category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
         if (!category.getChildren().isEmpty()) {

@@ -1,4 +1,4 @@
-package com.ecommerce.productservice.modules.brand;
+package com.ecommerce.productservice.modules.category;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,12 +7,15 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "brands", indexes = {
-        @Index(name = "idx_brand_slug", columnList = "slug"),
-        @Index(name = "idx_brand_active", columnList = "active")
+@Table(name = "categories", indexes = {
+        @Index(name = "idx_category_slug", columnList = "slug"),
+        @Index(name = "idx_category_parent", columnList = "parent_id"),
+        @Index(name = "idx_category_active", columnList = "active")
 })
 @EntityListeners(AuditingEntityListener.class)
 @Getter
@@ -20,7 +23,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Brand {
+public class CategoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,19 +38,31 @@ public class Brand {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String logoUrl;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private CategoryEntity parent;
 
-    private String websiteUrl;
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<CategoryEntity> children = new ArrayList<>();
 
     @Column(nullable = false)
     @Builder.Default
     private Boolean active = true;
+
+    @Column(name = "display_order")
+    private Integer displayOrder;
+
+    private String imageUrl;
 
     @Column(length = 150)
     private String metaTitle;
 
     @Column(length = 300)
     private String metaDescription;
+
+    @Column(length = 200)
+    private String metaKeywords;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

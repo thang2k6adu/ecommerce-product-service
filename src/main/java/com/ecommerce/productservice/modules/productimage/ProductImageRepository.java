@@ -8,11 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ProductImageRepository extends JpaRepository<ProductImage, UUID> {
+public interface ProductImageRepository extends JpaRepository<ProductImageEntity, UUID> {
 
-    List<ProductImage> findByProductIdOrderByDisplayOrderAsc(UUID productId);
+    List<ProductImageEntity> findByProductIdOrderByDisplayOrderAsc(UUID productId);
 
-    Optional<ProductImage> findByProductIdAndIsPrimaryTrue(UUID productId);
+    Optional<ProductImageEntity> findByProductIdAndIsPrimaryTrue(UUID productId);
 
     void deleteByProductId(UUID productId);
 }

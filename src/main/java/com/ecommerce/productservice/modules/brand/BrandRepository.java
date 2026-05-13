@@ -8,11 +8,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface BrandRepository extends JpaRepository<Brand, UUID> {
+public interface BrandRepository extends JpaRepository<BrandEntity, UUID> {
 
-    Optional<Brand> findBySlug(String slug);
+    Optional<BrandEntity> findBySlug(String slug);
 
-    List<Brand> findByActiveTrue();
+    List<BrandEntity> findByActiveTrue();
 
     boolean existsBySlug(String slug);
 }

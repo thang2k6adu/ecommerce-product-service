@@ -1,6 +1,6 @@
 package com.ecommerce.productservice.document;
 
-import com.ecommerce.productservice.modules.product.Product;
+import com.ecommerce.productservice.modules.product.ProductEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -20,11 +20,11 @@ public interface ProductDocumentMapper {
     @Mapping(target = "brandSlug", expression = "java(product.getBrand() != null ? product.getBrand().getSlug() : null)")
     @Mapping(target = "status", expression = "java(product.getStatus().name())")
     @Mapping(target = "imageUrls", expression = "java(mapImageUrls(product))")
-    ProductDocument toDocument(Product product);
+    ProductDocument toDocument(ProductEntity product);
 
-    List<ProductDocument> toDocumentList(List<Product> products);
+    List<ProductDocument> toDocumentList(List<ProductEntity> products);
 
-    default List<String> mapImageUrls(Product product) {
+    default List<String> mapImageUrls(ProductEntity product) {
         if (product.getImages() == null) {
             return List.of();
         }

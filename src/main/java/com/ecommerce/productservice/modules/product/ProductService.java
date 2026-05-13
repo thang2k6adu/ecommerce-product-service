@@ -2,15 +2,15 @@ package com.ecommerce.productservice.modules.product;
 
 import com.ecommerce.productservice.document.ProductDocument;
 import com.ecommerce.productservice.document.ProductDocumentMapper;
-import com.ecommerce.productservice.modules.brand.Brand;
+import com.ecommerce.productservice.modules.brand.BrandEntity;
 import com.ecommerce.productservice.modules.brand.BrandRepository;
-import com.ecommerce.productservice.modules.category.Category;
+import com.ecommerce.productservice.modules.category.CategoryEntity;
 import com.ecommerce.productservice.modules.category.CategoryRepository;
 import com.ecommerce.productservice.modules.product.dto.*;
-import com.ecommerce.productservice.modules.productimage.ProductImage;
+import com.ecommerce.productservice.modules.productimage.ProductImageEntity;
 import com.ecommerce.productservice.modules.productimage.ProductImageMapper;
 import com.ecommerce.productservice.modules.productimage.dto.CreateProductImageRequest;
-import com.ecommerce.productservice.modules.productvariant.ProductVariant;
+import com.ecommerce.productservice.modules.productvariant.ProductVariantEntity;
 import com.ecommerce.productservice.modules.productvariant.ProductVariantMapper;
 import com.ecommerce.productservice.modules.productvariant.ProductVariantRepository;
 import com.ecommerce.productservice.modules.productvariant.dto.CreateProductVariantRequest;
@@ -57,16 +57,16 @@ public class ProductService {
             throw new BadRequestException("Product slug already exists: " + request.getSlug());
         }
 
-        Product product = productMapper.toEntity(request);
+        ProductEntity product = productMapper.toEntity(request);
 
         if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
+            CategoryEntity category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
             product.setCategory(category);
         }
 
         if (request.getBrandId() != null) {
-            Brand brand = brandRepository.findById(request.getBrandId())
+            BrandEntity brand = brandRepository.findById(request.getBrandId())
                     .orElseThrow(() -> new ResourceNotFoundException("Brand", "id", request.getBrandId()));
             product.setBrand(brand);
         }
@@ -75,11 +75,11 @@ public class ProductService {
             product.setPublishedAt(LocalDateTime.now());
         }
 
-        Product savedProduct = productRepository.save(product);
+        ProductEntity savedProduct = productRepository.save(product);
 
         if (request.getImages() != null && !request.getImages().isEmpty()) {
             for (CreateProductImageRequest imageRequest : request.getImages()) {
-                ProductImage image = productImageMapper.toEntity(imageRequest);
+                ProductImageEntity image = productImageMapper.toEntity(imageRequest);
                 savedProduct.addImage(image);
             }
         }
@@ -89,7 +89,7 @@ public class ProductService {
                 if (productVariantRepository.existsBySku(variantRequest.getSku())) {
                     throw new BadRequestException("Variant SKU already exists: " + variantRequest.getSku());
                 }
-                ProductVariant variant = productVariantMapper.toEntity(variantRequest);
+                ProductVariantEntity variant = productVariantMapper.toEntity(variantRequest);
                 savedProduct.addVariant(variant);
             }
         }
@@ -104,14 +104,14 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductResponse getProductById(UUID id) {
-        Product product = productRepository.findByIdWithDetails(id)
+        ProductEntity product = productRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
         return productMapper.toResponse(product);
     }
 
     @Transactional(readOnly = true)
     public ProductResponse getProductBySlug(String slug) {
-        Product product = productRepository.findBySlug(slug)
+        ProductEntity product = productRepository.findBySlug(slug)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "slug", slug));
         return productMapper.toResponse(product);
     }
@@ -122,7 +122,7 @@ public class ProductService {
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> productPage = productRepository.findAll(pageable);
+        Page<ProductEntity> productPage = productRepository.findAll(pageable);
 
         return buildPageResponse(productPage);
     }
@@ -133,7 +133,7 @@ public class ProductService {
                 Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<Product> productPage = productRepository.findByPublishedTrue(pageable);
+        Page<ProductEntity> productPage = productRepository.findByPublishedTrue(pageable);
 
         return buildPageResponse(productPage);
     }
@@ -141,35 +141,35 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageResponse<ProductResponse> getProductsByCategory(UUID categoryId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productRepository.findPublishedByCategoryId(categoryId, pageable);
+        Page<ProductEntity> productPage = productRepository.findPublishedByCategoryId(categoryId, pageable);
         return buildPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<ProductResponse> getProductsByBrand(UUID brandId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productRepository.findPublishedByBrandId(brandId, pageable);
+        Page<ProductEntity> productPage = productRepository.findPublishedByBrandId(brandId, pageable);
         return buildPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<ProductResponse> getFeaturedProducts(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productRepository.findByFeaturedTrue(pageable);
+        Page<ProductEntity> productPage = productRepository.findByFeaturedTrue(pageable);
         return buildPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<ProductResponse> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productRepository.findByPriceRange(minPrice, maxPrice, pageable);
+        Page<ProductEntity> productPage = productRepository.findByPriceRange(minPrice, maxPrice, pageable);
         return buildPageResponse(productPage);
     }
 
     public ProductResponse updateProduct(UUID id, CreateProductRequest request) {
         log.info("Updating product: {}", id);
 
-        Product product = productRepository.findById(id)
+        ProductEntity product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
 
         if (request.getSlug() != null && !request.getSlug().equals(product.getSlug())) {
@@ -181,13 +181,13 @@ public class ProductService {
         productMapper.updateEntityFromRequest(request, product);
 
         if (request.getCategoryId() != null) {
-            Category category = categoryRepository.findById(request.getCategoryId())
+            CategoryEntity category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
             product.setCategory(category);
         }
 
         if (request.getBrandId() != null) {
-            Brand brand = brandRepository.findById(request.getBrandId())
+            BrandEntity brand = brandRepository.findById(request.getBrandId())
                     .orElseThrow(() -> new ResourceNotFoundException("Brand", "id", request.getBrandId()));
             product.setBrand(brand);
         }
@@ -196,7 +196,7 @@ public class ProductService {
             product.setPublishedAt(LocalDateTime.now());
         }
 
-        Product updatedProduct = productRepository.save(product);
+        ProductEntity updatedProduct = productRepository.save(product);
 
         syncToElasticsearch(updatedProduct);
 
@@ -207,7 +207,7 @@ public class ProductService {
     public void deleteProduct(UUID id) {
         log.info("Deleting product: {}", id);
 
-        Product product = productRepository.findById(id)
+        ProductEntity product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
 
         productRepository.delete(product);
@@ -231,14 +231,14 @@ public class ProductService {
 
         log.info("Syncing all products to Elasticsearch");
 
-        List<Product> products = productRepository.findAll();
+        List<ProductEntity> products = productRepository.findAll();
         List<ProductDocument> documents = productDocumentMapper.toDocumentList(products);
         productSearchRepository.get().saveAll(documents);
 
         log.info("Synced {} products to Elasticsearch", products.size());
     }
 
-    private void syncToElasticsearch(Product product) {
+    private void syncToElasticsearch(ProductEntity product) {
         if (productSearchRepository.isEmpty()) {
             return;
         }
@@ -252,7 +252,7 @@ public class ProductService {
         }
     }
 
-    private PageResponse<ProductResponse> buildPageResponse(Page<Product> productPage) {
+    private PageResponse<ProductResponse> buildPageResponse(Page<ProductEntity> productPage) {
         List<ProductResponse> content = productMapper.toResponseList(productPage.getContent());
 
         return PageResponse.<ProductResponse>builder()

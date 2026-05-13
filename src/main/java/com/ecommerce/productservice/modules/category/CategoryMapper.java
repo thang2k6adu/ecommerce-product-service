@@ -14,13 +14,13 @@ public interface CategoryMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "parent", ignore = true)
     @Mapping(target = "children", ignore = true)
-    Category toEntity(CreateCategoryRequest request);
+    CategoryEntity toEntity(CreateCategoryRequest request);
 
     @Mapping(source = "parent.id", target = "parentId")
     @Mapping(source = "parent.name", target = "parentName")
-    CategoryResponse toResponse(Category category);
+    CategoryResponse toResponse(CategoryEntity category);
 
-    List<CategoryResponse> toResponseList(List<Category> categories);
+    List<CategoryResponse> toResponseList(List<CategoryEntity> categories);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
@@ -28,5 +28,5 @@ public interface CategoryMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "parent", ignore = true)
     @Mapping(target = "children", ignore = true)
-    void updateEntityFromRequest(CreateCategoryRequest request, @MappingTarget Category category);
+    void updateEntityFromRequest(CreateCategoryRequest request, @MappingTarget CategoryEntity category);
 }

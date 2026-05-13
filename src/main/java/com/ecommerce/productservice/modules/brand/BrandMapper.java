@@ -12,15 +12,15 @@ public interface BrandMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Brand toEntity(CreateBrandRequest request);
+    BrandEntity toEntity(CreateBrandRequest request);
 
-    BrandResponse toResponse(Brand brand);
+    BrandResponse toResponse(BrandEntity brand);
 
-    List<BrandResponse> toResponseList(List<Brand> brands);
+    List<BrandResponse> toResponseList(List<BrandEntity> brands);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    void updateEntityFromRequest(CreateBrandRequest request, @MappingTarget Brand brand);
+    void updateEntityFromRequest(CreateBrandRequest request, @MappingTarget BrandEntity brand);
 }

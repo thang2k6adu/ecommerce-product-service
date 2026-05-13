@@ -1,9 +1,9 @@
 package com.ecommerce.productservice.modules.product;
 
-import com.ecommerce.productservice.modules.brand.Brand;
-import com.ecommerce.productservice.modules.category.Category;
-import com.ecommerce.productservice.modules.productimage.ProductImage;
-import com.ecommerce.productservice.modules.productvariant.ProductVariant;
+import com.ecommerce.productservice.modules.brand.BrandEntity;
+import com.ecommerce.productservice.modules.category.CategoryEntity;
+import com.ecommerce.productservice.modules.productimage.ProductImageEntity;
+import com.ecommerce.productservice.modules.productvariant.ProductVariantEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -31,7 +31,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Product {
+public class ProductEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -60,11 +60,11 @@ public class Product {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;
+    private CategoryEntity category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "brand_id")
-    private Brand brand;
+    private BrandEntity brand;
 
     @Column(nullable = false, length = 50)
     @Enumerated(EnumType.STRING)
@@ -112,11 +112,11 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<ProductImage> images = new ArrayList<>();
+    private List<ProductImageEntity> images = new ArrayList<>();
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<ProductVariant> variants = new ArrayList<>();
+    private List<ProductVariantEntity> variants = new ArrayList<>();
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -143,22 +143,22 @@ public class Product {
                 .trim();
     }
 
-    public void addImage(ProductImage image) {
+    public void addImage(ProductImageEntity image) {
         images.add(image);
         image.setProduct(this);
     }
 
-    public void removeImage(ProductImage image) {
+    public void removeImage(ProductImageEntity image) {
         images.remove(image);
         image.setProduct(null);
     }
 
-    public void addVariant(ProductVariant variant) {
+    public void addVariant(ProductVariantEntity variant) {
         variants.add(variant);
         variant.setProduct(this);
     }
 
-    public void removeVariant(ProductVariant variant) {
+    public void removeVariant(ProductVariantEntity variant) {
         variants.remove(variant);
         variant.setProduct(null);
     }

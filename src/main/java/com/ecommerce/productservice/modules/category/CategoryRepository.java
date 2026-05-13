@@ -9,18 +9,18 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, UUID> {
+public interface CategoryRepository extends JpaRepository<CategoryEntity, UUID> {
 
-    Optional<Category> findBySlug(String slug);
+    Optional<CategoryEntity> findBySlug(String slug);
 
-    List<Category> findByParentIsNull();
+    List<CategoryEntity> findByParentIsNull();
 
-    List<Category> findByParentId(UUID parentId);
+    List<CategoryEntity> findByParentId(UUID parentId);
 
-    List<Category> findByActiveTrue();
+    List<CategoryEntity> findByActiveTrue();
 
-    @Query("SELECT c FROM Category c WHERE c.parent IS NULL AND c.active = true ORDER BY c.displayOrder ASC, c.name ASC")
-    List<Category> findRootCategoriesActive();
+    @Query("SELECT c FROM CategoryEntity c WHERE c.parent IS NULL AND c.active = true ORDER BY c.displayOrder ASC, c.name ASC")
+    List<CategoryEntity> findRootCategoriesActive();
 
     boolean existsBySlug(String slug);
 }

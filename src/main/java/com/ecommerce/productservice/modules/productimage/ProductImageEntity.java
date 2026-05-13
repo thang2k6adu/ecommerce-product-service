@@ -1,6 +1,6 @@
 package com.ecommerce.productservice.modules.productimage;
 
-import com.ecommerce.productservice.modules.product.Product;
+import com.ecommerce.productservice.modules.product.ProductEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,7 +20,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductImage {
+public class ProductImageEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,7 +28,7 @@ public class ProductImage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    private ProductEntity product;
 
     @Column(nullable = false, length = 500)
     private String imageUrl;
