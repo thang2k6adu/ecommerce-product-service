@@ -1,6 +1,6 @@
 package com.ecommerce.productservice.modules.cart.dto.response;
 
-import com.ecommerce.productservice.common.api.PageResponse;
+import com.ecommerce.productservice.common.api.PageMeta;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -9,5 +9,5 @@ import lombok.Getter;
 public class CartWithItemsPage {
 
     private CartResponse cart;
-    private PageResponse.Meta itemsMeta;
+    private PageMeta itemsMeta;
 }

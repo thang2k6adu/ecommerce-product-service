@@ -19,28 +19,14 @@ public class PageResponse<T> {
     private Boolean last;
     private Boolean first;
 
-    public Meta toMeta() {
-        return Meta.builder()
-                .page(page)
-                .size(size)
-                .totalElements(totalElements)
-                .totalPages(totalPages)
+    public PageMeta toMeta() {
+        return PageMeta.builder()
+                .page(page != null ? page : 0)
+                .size(size != null ? size : 0)
+                .totalElements(totalElements != null ? totalElements : 0L)
+                .totalPages(totalPages != null ? totalPages : 0)
                 .first(first)
                 .last(last)
                 .build();
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class Meta {
-        private Integer page;
-        private Integer size;
-        private Long totalElements;
-        private Integer totalPages;
-        private Boolean first;
-        private Boolean last;
     }
 }

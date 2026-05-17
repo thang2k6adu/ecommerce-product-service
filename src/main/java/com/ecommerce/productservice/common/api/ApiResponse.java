@@ -1,23 +1,32 @@
 package com.ecommerce.productservice.common.api;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.List;
 
+/**
+ * Aligns with REACT-FASHION {@code ApiResponse<T, M>} / {@code PageMeta}.
+ */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@JsonPropertyOrder({"success", "data", "meta", "error", "message"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({"success", "message", "data", "meta", "error", "timestamp"})
 public class ApiResponse<T> {
 
     private Boolean success;
-    private T data;
-    private PageResponse.Meta meta;
-    private String error;
     private String message;
+    private T data;
+    private PageMeta meta;
+    private String error;
+
+    @Builder.Default
+    private Instant timestamp = Instant.now();
 
     public static <T> ApiResponse<T> success(T data) {
         return ApiResponse.<T>builder()
@@ -42,7 +51,7 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    public static <T> ApiResponse<T> successWithMeta(T data, PageResponse.Meta meta) {
+    public static <T> ApiResponse<T> successWithMeta(T data, PageMeta meta) {
         return ApiResponse.<T>builder()
                 .success(true)
                 .data(data)

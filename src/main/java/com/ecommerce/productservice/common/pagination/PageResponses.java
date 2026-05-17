@@ -1,5 +1,6 @@
 package com.ecommerce.productservice.common.pagination;
 
+import com.ecommerce.productservice.common.api.PageMeta;
 import com.ecommerce.productservice.common.api.PageResponse;
 import org.springframework.data.domain.Page;
 
@@ -28,8 +29,8 @@ public final class PageResponses {
                 .build();
     }
 
-    public static PageResponse.Meta metaFrom(Page<?> page) {
-        return PageResponse.Meta.builder()
+    public static PageMeta metaFrom(Page<?> page) {
+        return PageMeta.builder()
                 .page(page.getNumber())
                 .size(page.getSize())
                 .totalElements(page.getTotalElements())
