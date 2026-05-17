@@ -1,6 +1,7 @@
 package com.ecommerce.productservice.modules.category;
 
 import com.ecommerce.productservice.common.api.ApiResponse;
+import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.modules.category.dto.CategoryResponse;
 import com.ecommerce.productservice.modules.category.dto.CreateCategoryRequest;
 import jakarta.validation.Valid;
@@ -43,15 +44,23 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories() {
-        List<CategoryResponse> responses = categoryService.getAllCategories();
-        return ResponseEntity.ok(ApiResponse.success(responses));
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+        PageResponse<CategoryResponse> response = categoryService.getAllCategories(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/active")
-    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getActiveCategories() {
-        List<CategoryResponse> responses = categoryService.getActiveCategories();
-        return ResponseEntity.ok(ApiResponse.success(responses));
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getActiveCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "displayOrder") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection) {
+        PageResponse<CategoryResponse> response = categoryService.getActiveCategories(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/tree")
@@ -61,9 +70,11 @@ public class CategoryController {
     }
 
     @GetMapping("/root")
-    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getRootCategories() {
-        List<CategoryResponse> responses = categoryService.getRootCategories();
-        return ResponseEntity.ok(ApiResponse.success(responses));
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getRootCategories(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        PageResponse<CategoryResponse> response = categoryService.getRootCategories(page, size);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PutMapping("/{id}")

@@ -42,6 +42,14 @@ public class ApiResponse<T> {
                 .build();
     }
 
+    public static <T> ApiResponse<T> successWithMeta(T data, PageResponse.Meta meta) {
+        return ApiResponse.<T>builder()
+                .success(true)
+                .data(data)
+                .meta(meta)
+                .build();
+    }
+
     public static <T> ApiResponse<T> error(String error) {
         return ApiResponse.<T>builder()
                 .success(false)

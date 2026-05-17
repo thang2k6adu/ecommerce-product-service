@@ -1,6 +1,7 @@
 package com.ecommerce.productservice.modules.brand;
 
 import com.ecommerce.productservice.common.api.ApiResponse;
+import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.modules.brand.dto.BrandResponse;
 import com.ecommerce.productservice.modules.brand.dto.CreateBrandRequest;
 import jakarta.validation.Valid;
@@ -43,15 +44,23 @@ public class BrandController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BrandResponse>>> getAllBrands() {
-        List<BrandResponse> responses = brandService.getAllBrands();
-        return ResponseEntity.ok(ApiResponse.success(responses));
+    public ResponseEntity<ApiResponse<List<BrandResponse>>> getAllBrands(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
+        PageResponse<BrandResponse> response = brandService.getAllBrands(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/active")
-    public ResponseEntity<ApiResponse<List<BrandResponse>>> getActiveBrands() {
-        List<BrandResponse> responses = brandService.getActiveBrands();
-        return ResponseEntity.ok(ApiResponse.success(responses));
+    public ResponseEntity<ApiResponse<List<BrandResponse>>> getActiveBrands(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection) {
+        PageResponse<BrandResponse> response = brandService.getActiveBrands(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PutMapping("/{id}")

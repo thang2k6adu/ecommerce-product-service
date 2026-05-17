@@ -1,11 +1,16 @@
 package com.ecommerce.productservice.modules.category;
 
+import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.common.exception.BadRequestException;
 import com.ecommerce.productservice.common.exception.ResourceNotFoundException;
 import com.ecommerce.productservice.modules.category.dto.CategoryResponse;
 import com.ecommerce.productservice.modules.category.dto.CreateCategoryRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,21 +77,34 @@ public class CategoryService {
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getAllCategories() {
-        List<CategoryEntity> categories = categoryRepository.findAll();
-        return categoryMapper.toResponseList(categories);
+    public PageResponse<CategoryResponse> getAllCategories(int page, int size, String sortBy, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<CategoryEntity> categoryPage = categoryRepository.findAll(pageable);
+
+        return buildPageResponse(categoryPage);
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getActiveCategories() {
-        List<CategoryEntity> categories = categoryRepository.findByActiveTrue();
-        return categoryMapper.toResponseList(categories);
+    public PageResponse<CategoryResponse> getActiveCategories(int page, int size, String sortBy, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<CategoryEntity> categoryPage = categoryRepository.findByActiveTrue(pageable);
+
+        return buildPageResponse(categoryPage);
     }
 
     @Transactional(readOnly = true)
-    public List<CategoryResponse> getRootCategories() {
-        List<CategoryEntity> categories = categoryRepository.findByParentIsNull();
-        return categories.stream()
+    public PageResponse<CategoryResponse> getRootCategories(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size,
+                Sort.by("displayOrder").ascending().and(Sort.by("name").ascending()));
+        Page<CategoryEntity> categoryPage = categoryRepository.findByParentIsNull(pageable);
+
+        List<CategoryResponse> content = categoryPage.getContent().stream()
                 .map(category -> {
                     CategoryResponse response = categoryMapper.toResponse(category);
                     if (!category.getChildren().isEmpty()) {
@@ -95,6 +113,30 @@ public class CategoryService {
                     return response;
                 })
                 .collect(Collectors.toList());
+
+        return PageResponse.<CategoryResponse>builder()
+                .content(content)
+                .page(categoryPage.getNumber())
+                .size(categoryPage.getSize())
+                .totalElements(categoryPage.getTotalElements())
+                .totalPages(categoryPage.getTotalPages())
+                .last(categoryPage.isLast())
+                .first(categoryPage.isFirst())
+                .build();
+    }
+
+    private PageResponse<CategoryResponse> buildPageResponse(Page<CategoryEntity> categoryPage) {
+        List<CategoryResponse> content = categoryMapper.toResponseList(categoryPage.getContent());
+
+        return PageResponse.<CategoryResponse>builder()
+                .content(content)
+                .page(categoryPage.getNumber())
+                .size(categoryPage.getSize())
+                .totalElements(categoryPage.getTotalElements())
+                .totalPages(categoryPage.getTotalPages())
+                .last(categoryPage.isLast())
+                .first(categoryPage.isFirst())
+                .build();
     }
 
     @Transactional(readOnly = true)

@@ -1,5 +1,7 @@
 package com.ecommerce.productservice.modules.category;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,11 +15,11 @@ public interface CategoryRepository extends JpaRepository<CategoryEntity, UUID> 
 
     Optional<CategoryEntity> findBySlug(String slug);
 
-    List<CategoryEntity> findByParentIsNull();
+    Page<CategoryEntity> findByParentIsNull(Pageable pageable);
 
     List<CategoryEntity> findByParentId(UUID parentId);
 
-    List<CategoryEntity> findByActiveTrue();
+    Page<CategoryEntity> findByActiveTrue(Pageable pageable);
 
     @Query("SELECT c FROM CategoryEntity c WHERE c.parent IS NULL AND c.active = true ORDER BY c.displayOrder ASC, c.name ASC")
     List<CategoryEntity> findRootCategoriesActive();

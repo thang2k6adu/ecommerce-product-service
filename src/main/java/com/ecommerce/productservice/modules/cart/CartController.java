@@ -32,19 +32,28 @@ public class CartController {
     @Operation(summary = "Get current cart")
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
-    public ResponseEntity<ApiResponse<CartResponse>> getCurrentCart(Authentication authentication) {
+    public ResponseEntity<ApiResponse<CartResponse>> getCurrentCart(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection,
+            Authentication authentication) {
         log.debug("Getting current cart for user: {}", authentication.getName());
-        CartResponse cart = cartService.getCurrentCart();
-        return ResponseEntity.ok(ApiResponse.success(cart));
+        var result = cartService.getCurrentCart(page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(ApiResponse.successWithMeta(result.getCart(), result.getItemsMeta()));
     }
 
     @Operation(summary = "Get guest cart")
     @GetMapping("/guest/{sessionId}")
     public ResponseEntity<ApiResponse<CartResponse>> getGuestCart(
-            @Parameter(description = "Session ID of the guest cart") @PathVariable String sessionId) {
+            @Parameter(description = "Session ID of the guest cart") @PathVariable String sessionId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDirection) {
         log.debug("Getting guest cart for session: {}", sessionId);
-        CartResponse cart = cartService.getGuestCart(sessionId);
-        return ResponseEntity.ok(ApiResponse.success(cart));
+        var result = cartService.getGuestCart(sessionId, page, size, sortBy, sortDirection);
+        return ResponseEntity.ok(ApiResponse.successWithMeta(result.getCart(), result.getItemsMeta()));
     }
 
     @Operation(summary = "Add item to cart")

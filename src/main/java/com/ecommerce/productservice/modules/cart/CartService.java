@@ -1,16 +1,23 @@
 package com.ecommerce.productservice.modules.cart;
 
+import com.ecommerce.productservice.common.api.PageResponse;
+import com.ecommerce.productservice.common.exception.ResourceNotFoundException;
 import com.ecommerce.productservice.modules.cart.dto.request.AddToCartRequest;
 import com.ecommerce.productservice.modules.cart.dto.request.UpdateCartItemRequest;
 import com.ecommerce.productservice.modules.cart.dto.response.CartItemResponse;
 import com.ecommerce.productservice.modules.cart.dto.response.CartResponse;
 import com.ecommerce.productservice.modules.cart.dto.response.CartSummaryResponse;
+import com.ecommerce.productservice.modules.cart.dto.response.CartWithItemsPage;
 import com.ecommerce.productservice.modules.cart.entity.Cart;
 import com.ecommerce.productservice.modules.cart.entity.CartItem;
+import com.ecommerce.productservice.modules.cart.repository.CartItemRepository;
 import com.ecommerce.productservice.modules.cart.repository.CartRepository;
-import com.ecommerce.productservice.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -29,6 +36,7 @@ import java.util.UUID;
 public class CartService {
 
     private final CartRepository cartRepository;
+    private final CartItemRepository cartItemRepository;
     private final CartItemService cartItemService;
     private final CartMapper cartMapper;
 
@@ -40,29 +48,20 @@ public class CartService {
         throw new RuntimeException("Unable to get user ID from security context");
     }
 
-    public CartResponse getCurrentCart() {
+    public CartWithItemsPage getCurrentCart(int page, int size, String sortBy, String sortDirection) {
         String userId = getCurrentUserId();
         log.debug("Getting cart for user: {}", userId);
 
-        Cart cart = cartRepository.findByUserIdAndStatus(userId, Cart.CartStatus.ACTIVE)
-                .orElseGet(() -> {
-                    log.debug("Creating new cart for user: {}", userId);
-                    Cart newCart = Cart.builder()
-                            .userId(userId)
-                            .status(Cart.CartStatus.ACTIVE)
-                            .items(new ArrayList<>())
-                            .build();
-                    return cartRepository.save(newCart);
-                });
+        Cart cart = findOrCreateUserCart(userId);
 
         if (!cart.getItems().isEmpty()) {
             cartItemService.validateCartItems(cart);
         }
 
-        return buildCartResponse(cart);
+        return buildPaginatedCartResponse(cart, page, size, sortBy, sortDirection);
     }
 
-    public CartResponse getGuestCart(String sessionId) {
+    public CartWithItemsPage getGuestCart(String sessionId, int page, int size, String sortBy, String sortDirection) {
         log.debug("Getting guest cart for session: {}", sessionId);
 
         Cart cart = cartRepository.findBySessionIdAndStatus(sessionId, Cart.CartStatus.ACTIVE)
@@ -77,7 +76,31 @@ public class CartService {
                     return cartRepository.save(newCart);
                 });
 
+        return buildPaginatedCartResponse(cart, page, size, sortBy, sortDirection);
+    }
+
+    public CartResponse getCurrentCart() {
+        String userId = getCurrentUserId();
+        Cart cart = findOrCreateUserCart(userId);
+
+        if (!cart.getItems().isEmpty()) {
+            cartItemService.validateCartItems(cart);
+        }
+
         return buildCartResponse(cart);
+    }
+
+    private Cart findOrCreateUserCart(String userId) {
+        return cartRepository.findByUserIdAndStatus(userId, Cart.CartStatus.ACTIVE)
+                .orElseGet(() -> {
+                    log.debug("Creating new cart for user: {}", userId);
+                    Cart newCart = Cart.builder()
+                            .userId(userId)
+                            .status(Cart.CartStatus.ACTIVE)
+                            .items(new ArrayList<>())
+                            .build();
+                    return cartRepository.save(newCart);
+                });
     }
 
     public CartResponse addToCart(AddToCartRequest request) {
@@ -230,24 +253,54 @@ public class CartService {
         return buildCartResponse(userCart);
     }
 
+    private CartWithItemsPage buildPaginatedCartResponse(Cart cart, int page, int size, String sortBy, String sortDirection) {
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
+                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<CartItem> itemPage = cartItemRepository.findByCart_Id(cart.getId(), pageable);
+        CartResponse response = buildCartHeader(cart);
+        response.setItems(enrichItemTotals(cartMapper.toItemResponseList(itemPage.getContent())));
+
+        PageResponse<CartItemResponse> itemsPageResponse = PageResponse.<CartItemResponse>builder()
+                .content(response.getItems())
+                .page(itemPage.getNumber())
+                .size(itemPage.getSize())
+                .totalElements(itemPage.getTotalElements())
+                .totalPages(itemPage.getTotalPages())
+                .last(itemPage.isLast())
+                .first(itemPage.isFirst())
+                .build();
+
+        return new CartWithItemsPage(response, itemsPageResponse.toMeta());
+    }
+
     private CartResponse buildCartResponse(Cart cart) {
+        CartResponse response = buildCartHeader(cart);
+        response.setItems(enrichItemTotals(cartMapper.toItemResponseList(cart.getItems())));
+        return response;
+    }
+
+    private CartResponse buildCartHeader(Cart cart) {
         CartResponse response = cartMapper.toResponse(cart);
 
-        BigDecimal subtotal = calculateSubtotal(cart.getItems());
-        Integer totalItems = cart.getItems().stream()
-                .mapToInt(CartItem::getQuantity)
-                .sum();
+        Integer totalItems = cartItemRepository.getTotalItemsByCartId(cart.getId());
+        BigDecimal subtotal = cartItemRepository.getSubtotalByCartId(cart.getId());
 
-        response.setSubtotal(subtotal);
+        response.setTotalItems(totalItems != null ? totalItems : 0);
+        response.setSubtotal(subtotal != null ? subtotal : BigDecimal.ZERO);
         response.setDiscount(BigDecimal.ZERO);
-        response.setTotal(subtotal);
-        response.setTotalItems(totalItems);
-
-        for (CartItemResponse itemResponse : response.getItems()) {
-            itemResponse.setTotal(itemResponse.getPrice().multiply(BigDecimal.valueOf(itemResponse.getQuantity())));
-        }
+        response.setTotal(subtotal != null ? subtotal : BigDecimal.ZERO);
+        response.setItems(new ArrayList<>());
 
         return response;
+    }
+
+    private List<CartItemResponse> enrichItemTotals(List<CartItemResponse> items) {
+        for (CartItemResponse itemResponse : items) {
+            itemResponse.setTotal(itemResponse.getPrice().multiply(BigDecimal.valueOf(itemResponse.getQuantity())));
+        }
+        return items;
     }
 
     private BigDecimal calculateSubtotal(List<CartItem> items) {
