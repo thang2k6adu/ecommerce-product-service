@@ -2,11 +2,13 @@ package com.ecommerce.productservice.modules.product;
 
 import com.ecommerce.productservice.common.api.ApiResponse;
 import com.ecommerce.productservice.common.api.PageResponse;
+import com.ecommerce.productservice.common.pagination.PageParams;
 import com.ecommerce.productservice.modules.product.dto.CreateProductRequest;
 import com.ecommerce.productservice.modules.product.dto.ProductResponse;
 import com.ecommerce.productservice.modules.productimage.ImageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,47 +51,38 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDirection) {
-        PageResponse<ProductResponse> response = productService.getAllProducts(page, size, sortBy, sortDirection);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<ProductResponse> response = productService.getAllProducts(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/published")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getPublishedProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDirection) {
-        PageResponse<ProductResponse> response = productService.getPublishedProducts(page, size, sortBy, sortDirection);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<ProductResponse> response = productService.getPublishedProducts(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/category/{categoryId}")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategory(
             @PathVariable UUID categoryId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        PageResponse<ProductResponse> response = productService.getProductsByCategory(categoryId, page, size);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<ProductResponse> response = productService.getProductsByCategory(categoryId, pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/brand/{brandId}")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByBrand(
             @PathVariable UUID brandId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        PageResponse<ProductResponse> response = productService.getProductsByBrand(brandId, page, size);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<ProductResponse> response = productService.getProductsByBrand(brandId, pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/featured")
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getFeaturedProducts(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        PageResponse<ProductResponse> response = productService.getFeaturedProducts(page, size);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<ProductResponse> response = productService.getFeaturedProducts(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -97,9 +90,8 @@ public class ProductController {
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByPriceRange(
             @RequestParam BigDecimal minPrice,
             @RequestParam BigDecimal maxPrice,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        PageResponse<ProductResponse> response = productService.getProductsByPriceRange(minPrice, maxPrice, page, size);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<ProductResponse> response = productService.getProductsByPriceRange(minPrice, maxPrice, pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

@@ -2,10 +2,13 @@ package com.ecommerce.productservice.modules.category;
 
 import com.ecommerce.productservice.common.api.ApiResponse;
 import com.ecommerce.productservice.common.api.PageResponse;
+import com.ecommerce.productservice.common.pagination.CategoryActivePageParams;
+import com.ecommerce.productservice.common.pagination.PageParams;
 import com.ecommerce.productservice.modules.category.dto.CategoryResponse;
 import com.ecommerce.productservice.modules.category.dto.CreateCategoryRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,21 +48,15 @@ public class CategoryController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getAllCategories(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDirection) {
-        PageResponse<CategoryResponse> response = categoryService.getAllCategories(page, size, sortBy, sortDirection);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<CategoryResponse> response = categoryService.getAllCategories(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/active")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getActiveCategories(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "displayOrder") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
-        PageResponse<CategoryResponse> response = categoryService.getActiveCategories(page, size, sortBy, sortDirection);
+            @ParameterObject CategoryActivePageParams pageParams) {
+        PageResponse<CategoryResponse> response = categoryService.getActiveCategories(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -71,9 +68,8 @@ public class CategoryController {
 
     @GetMapping("/root")
     public ResponseEntity<ApiResponse<List<CategoryResponse>>> getRootCategories(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        PageResponse<CategoryResponse> response = categoryService.getRootCategories(page, size);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<CategoryResponse> response = categoryService.getRootCategories(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

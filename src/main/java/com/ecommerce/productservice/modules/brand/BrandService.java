@@ -3,18 +3,19 @@ package com.ecommerce.productservice.modules.brand;
 import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.common.exception.BadRequestException;
 import com.ecommerce.productservice.common.exception.ResourceNotFoundException;
+import com.ecommerce.productservice.common.pagination.PageParams;
+import com.ecommerce.productservice.common.pagination.PageResponses;
+import com.ecommerce.productservice.common.pagination.PageableFactory;
+import com.ecommerce.productservice.common.pagination.SortFields;
 import com.ecommerce.productservice.modules.brand.dto.BrandResponse;
 import com.ecommerce.productservice.modules.brand.dto.CreateBrandRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -55,39 +56,27 @@ public class BrandService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<BrandResponse> getAllBrands(int page, int size, String sortBy, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
+    public PageResponse<BrandResponse> getAllBrands(PageParams pageParams) {
+        Pageable pageable = PageableFactory.sorted(
+                pageParams.getPage(),
+                pageParams.getSize(),
+                pageParams.getSortBy(),
+                pageParams.getSortDirection(),
+                SortFields.BRAND);
         Page<BrandEntity> brandPage = brandRepository.findAll(pageable);
-
-        return buildPageResponse(brandPage);
+        return PageResponses.of(brandPage, brandMapper.toResponseList(brandPage.getContent()));
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<BrandResponse> getActiveBrands(int page, int size, String sortBy, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
+    public PageResponse<BrandResponse> getActiveBrands(PageParams pageParams) {
+        Pageable pageable = PageableFactory.sorted(
+                pageParams.getPage(),
+                pageParams.getSize(),
+                pageParams.getSortBy(),
+                pageParams.getSortDirection(),
+                SortFields.BRAND);
         Page<BrandEntity> brandPage = brandRepository.findByActiveTrue(pageable);
-
-        return buildPageResponse(brandPage);
-    }
-
-    private PageResponse<BrandResponse> buildPageResponse(Page<BrandEntity> brandPage) {
-        List<BrandResponse> content = brandMapper.toResponseList(brandPage.getContent());
-
-        return PageResponse.<BrandResponse>builder()
-                .content(content)
-                .page(brandPage.getNumber())
-                .size(brandPage.getSize())
-                .totalElements(brandPage.getTotalElements())
-                .totalPages(brandPage.getTotalPages())
-                .last(brandPage.isLast())
-                .first(brandPage.isFirst())
-                .build();
+        return PageResponses.of(brandPage, brandMapper.toResponseList(brandPage.getContent()));
     }
 
     public BrandResponse updateBrand(UUID id, CreateBrandRequest request) {

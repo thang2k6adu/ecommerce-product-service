@@ -1,7 +1,10 @@
 package com.ecommerce.productservice.modules.cart;
 
-import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.common.exception.ResourceNotFoundException;
+import com.ecommerce.productservice.common.pagination.PageParams;
+import com.ecommerce.productservice.common.pagination.PageResponses;
+import com.ecommerce.productservice.common.pagination.PageableFactory;
+import com.ecommerce.productservice.common.pagination.SortFields;
 import com.ecommerce.productservice.modules.cart.dto.request.AddToCartRequest;
 import com.ecommerce.productservice.modules.cart.dto.request.UpdateCartItemRequest;
 import com.ecommerce.productservice.modules.cart.dto.response.CartItemResponse;
@@ -15,9 +18,7 @@ import com.ecommerce.productservice.modules.cart.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -48,7 +49,7 @@ public class CartService {
         throw new RuntimeException("Unable to get user ID from security context");
     }
 
-    public CartWithItemsPage getCurrentCart(int page, int size, String sortBy, String sortDirection) {
+    public CartWithItemsPage getCurrentCart(PageParams pageParams) {
         String userId = getCurrentUserId();
         log.debug("Getting cart for user: {}", userId);
 
@@ -58,10 +59,10 @@ public class CartService {
             cartItemService.validateCartItems(cart);
         }
 
-        return buildPaginatedCartResponse(cart, page, size, sortBy, sortDirection);
+        return buildPaginatedCartResponse(cart, pageParams);
     }
 
-    public CartWithItemsPage getGuestCart(String sessionId, int page, int size, String sortBy, String sortDirection) {
+    public CartWithItemsPage getGuestCart(String sessionId, PageParams pageParams) {
         log.debug("Getting guest cart for session: {}", sessionId);
 
         Cart cart = cartRepository.findBySessionIdAndStatus(sessionId, Cart.CartStatus.ACTIVE)
@@ -76,7 +77,7 @@ public class CartService {
                     return cartRepository.save(newCart);
                 });
 
-        return buildPaginatedCartResponse(cart, page, size, sortBy, sortDirection);
+        return buildPaginatedCartResponse(cart, pageParams);
     }
 
     public CartResponse getCurrentCart() {
@@ -253,26 +254,19 @@ public class CartService {
         return buildCartResponse(userCart);
     }
 
-    private CartWithItemsPage buildPaginatedCartResponse(Cart cart, int page, int size, String sortBy, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-        Pageable pageable = PageRequest.of(page, size, sort);
+    private CartWithItemsPage buildPaginatedCartResponse(Cart cart, PageParams pageParams) {
+        Pageable pageable = PageableFactory.sorted(
+                pageParams.getPage(),
+                pageParams.getSize(),
+                pageParams.getSortBy(),
+                pageParams.getSortDirection(),
+                SortFields.CART_ITEM);
 
         Page<CartItem> itemPage = cartItemRepository.findByCart_Id(cart.getId(), pageable);
         CartResponse response = buildCartHeader(cart);
         response.setItems(enrichItemTotals(cartMapper.toItemResponseList(itemPage.getContent())));
 
-        PageResponse<CartItemResponse> itemsPageResponse = PageResponse.<CartItemResponse>builder()
-                .content(response.getItems())
-                .page(itemPage.getNumber())
-                .size(itemPage.getSize())
-                .totalElements(itemPage.getTotalElements())
-                .totalPages(itemPage.getTotalPages())
-                .last(itemPage.isLast())
-                .first(itemPage.isFirst())
-                .build();
-
-        return new CartWithItemsPage(response, itemsPageResponse.toMeta());
+        return new CartWithItemsPage(response, PageResponses.metaFrom(itemPage));
     }
 
     private CartResponse buildCartResponse(Cart cart) {

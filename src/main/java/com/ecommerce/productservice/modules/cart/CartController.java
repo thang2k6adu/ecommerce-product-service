@@ -1,6 +1,7 @@
 package com.ecommerce.productservice.modules.cart;
 
 import com.ecommerce.productservice.common.api.ApiResponse;
+import com.ecommerce.productservice.common.pagination.PageParams;
 import com.ecommerce.productservice.modules.cart.dto.request.AddToCartRequest;
 import com.ecommerce.productservice.modules.cart.dto.request.MergeCartRequest;
 import com.ecommerce.productservice.modules.cart.dto.request.UpdateCartItemRequest;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -33,13 +35,10 @@ public class CartController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     public ResponseEntity<ApiResponse<CartResponse>> getCurrentCart(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDirection,
+            @ParameterObject PageParams pageParams,
             Authentication authentication) {
         log.debug("Getting current cart for user: {}", authentication.getName());
-        var result = cartService.getCurrentCart(page, size, sortBy, sortDirection);
+        var result = cartService.getCurrentCart(pageParams);
         return ResponseEntity.ok(ApiResponse.successWithMeta(result.getCart(), result.getItemsMeta()));
     }
 
@@ -47,12 +46,9 @@ public class CartController {
     @GetMapping("/guest/{sessionId}")
     public ResponseEntity<ApiResponse<CartResponse>> getGuestCart(
             @Parameter(description = "Session ID of the guest cart") @PathVariable String sessionId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDirection) {
+            @ParameterObject PageParams pageParams) {
         log.debug("Getting guest cart for session: {}", sessionId);
-        var result = cartService.getGuestCart(sessionId, page, size, sortBy, sortDirection);
+        var result = cartService.getGuestCart(sessionId, pageParams);
         return ResponseEntity.ok(ApiResponse.successWithMeta(result.getCart(), result.getItemsMeta()));
     }
 

@@ -17,13 +17,15 @@ import com.ecommerce.productservice.modules.productvariant.dto.CreateProductVari
 import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.common.exception.BadRequestException;
 import com.ecommerce.productservice.common.exception.ResourceNotFoundException;
+import com.ecommerce.productservice.common.pagination.PageParams;
+import com.ecommerce.productservice.common.pagination.PageResponses;
+import com.ecommerce.productservice.common.pagination.PageableFactory;
+import com.ecommerce.productservice.common.pagination.SortFields;
 import com.ecommerce.productservice.modules.search.ProductSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,53 +119,60 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getAllProducts(int page, int size, String sortBy, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
+    public PageResponse<ProductResponse> getAllProducts(PageParams pageParams) {
+        Pageable pageable = PageableFactory.sorted(
+                pageParams.getPage(),
+                pageParams.getSize(),
+                pageParams.getSortBy(),
+                pageParams.getSortDirection(),
+                SortFields.PRODUCT);
         Page<ProductEntity> productPage = productRepository.findAll(pageable);
-
-        return buildPageResponse(productPage);
+        return toProductPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getPublishedProducts(int page, int size, String sortBy, String sortDirection) {
-        Sort sort = sortDirection.equalsIgnoreCase("desc") ?
-                Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
+    public PageResponse<ProductResponse> getPublishedProducts(PageParams pageParams) {
+        Pageable pageable = PageableFactory.sorted(
+                pageParams.getPage(),
+                pageParams.getSize(),
+                pageParams.getSortBy(),
+                pageParams.getSortDirection(),
+                SortFields.PRODUCT);
         Page<ProductEntity> productPage = productRepository.findByPublishedTrue(pageable);
-
-        return buildPageResponse(productPage);
+        return toProductPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getProductsByCategory(UUID categoryId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<ProductResponse> getProductsByCategory(UUID categoryId, PageParams pageParams) {
+        Pageable pageable = PageableFactory.unsorted(pageParams.getPage(), pageParams.getSize());
         Page<ProductEntity> productPage = productRepository.findPublishedByCategoryId(categoryId, pageable);
-        return buildPageResponse(productPage);
+        return toProductPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getProductsByBrand(UUID brandId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<ProductResponse> getProductsByBrand(UUID brandId, PageParams pageParams) {
+        Pageable pageable = PageableFactory.unsorted(pageParams.getPage(), pageParams.getSize());
         Page<ProductEntity> productPage = productRepository.findPublishedByBrandId(brandId, pageable);
-        return buildPageResponse(productPage);
+        return toProductPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getFeaturedProducts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<ProductResponse> getFeaturedProducts(PageParams pageParams) {
+        Pageable pageable = PageableFactory.unsorted(pageParams.getPage(), pageParams.getSize());
         Page<ProductEntity> productPage = productRepository.findByFeaturedTrue(pageable);
-        return buildPageResponse(productPage);
+        return toProductPageResponse(productPage);
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public PageResponse<ProductResponse> getProductsByPriceRange(
+            BigDecimal minPrice, BigDecimal maxPrice, PageParams pageParams) {
+        Pageable pageable = PageableFactory.unsorted(pageParams.getPage(), pageParams.getSize());
         Page<ProductEntity> productPage = productRepository.findByPriceRange(minPrice, maxPrice, pageable);
-        return buildPageResponse(productPage);
+        return toProductPageResponse(productPage);
+    }
+
+    private PageResponse<ProductResponse> toProductPageResponse(Page<ProductEntity> productPage) {
+        return PageResponses.of(productPage, productMapper.toResponseList(productPage.getContent()));
     }
 
     public ProductResponse updateProduct(UUID id, CreateProductRequest request) {
@@ -252,17 +261,4 @@ public class ProductService {
         }
     }
 
-    private PageResponse<ProductResponse> buildPageResponse(Page<ProductEntity> productPage) {
-        List<ProductResponse> content = productMapper.toResponseList(productPage.getContent());
-
-        return PageResponse.<ProductResponse>builder()
-                .content(content)
-                .page(productPage.getNumber())
-                .size(productPage.getSize())
-                .totalElements(productPage.getTotalElements())
-                .totalPages(productPage.getTotalPages())
-                .last(productPage.isLast())
-                .first(productPage.isFirst())
-                .build();
-    }
 }

@@ -2,10 +2,13 @@ package com.ecommerce.productservice.modules.brand;
 
 import com.ecommerce.productservice.common.api.ApiResponse;
 import com.ecommerce.productservice.common.api.PageResponse;
+import com.ecommerce.productservice.common.pagination.BrandActivePageParams;
+import com.ecommerce.productservice.common.pagination.PageParams;
 import com.ecommerce.productservice.modules.brand.dto.BrandResponse;
 import com.ecommerce.productservice.modules.brand.dto.CreateBrandRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,21 +48,15 @@ public class BrandController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<BrandResponse>>> getAllBrands(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDirection) {
-        PageResponse<BrandResponse> response = brandService.getAllBrands(page, size, sortBy, sortDirection);
+            @ParameterObject PageParams pageParams) {
+        PageResponse<BrandResponse> response = brandService.getAllBrands(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @GetMapping("/active")
     public ResponseEntity<ApiResponse<List<BrandResponse>>> getActiveBrands(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "name") String sortBy,
-            @RequestParam(defaultValue = "asc") String sortDirection) {
-        PageResponse<BrandResponse> response = brandService.getActiveBrands(page, size, sortBy, sortDirection);
+            @ParameterObject BrandActivePageParams pageParams) {
+        PageResponse<BrandResponse> response = brandService.getActiveBrands(pageParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
