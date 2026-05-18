@@ -18,6 +18,7 @@ import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.common.exception.BadRequestException;
 import com.ecommerce.productservice.common.exception.ResourceNotFoundException;
 import com.ecommerce.productservice.common.pagination.PageParams;
+import com.ecommerce.productservice.common.pagination.ProductFilterParams;
 import com.ecommerce.productservice.common.pagination.PageResponses;
 import com.ecommerce.productservice.common.pagination.PageableFactory;
 import com.ecommerce.productservice.common.pagination.SortFields;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,15 +121,27 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductResponse> getAllProducts(PageParams pageParams) {
+    public PageResponse<ProductResponse> getAllProducts(ProductFilterParams filterParams) {
+        validatePriceRange(filterParams);
+
         Pageable pageable = PageableFactory.sorted(
-                pageParams.getPage(),
-                pageParams.getSize(),
-                pageParams.getSortBy(),
-                pageParams.getSortDirection(),
+                filterParams.getPage(),
+                filterParams.getSize(),
+                filterParams.getSortBy(),
+                filterParams.getSortDirection(),
                 SortFields.PRODUCT);
-        Page<ProductEntity> productPage = productRepository.findAll(pageable);
+
+        Specification<ProductEntity> specification = ProductSpecifications.from(filterParams);
+        Page<ProductEntity> productPage = productRepository.findAll(specification, pageable);
         return toProductPageResponse(productPage);
+    }
+
+    private void validatePriceRange(ProductFilterParams filterParams) {
+        if (filterParams.getMinPrice() != null
+                && filterParams.getMaxPrice() != null
+                && filterParams.getMinPrice().compareTo(filterParams.getMaxPrice()) > 0) {
+            throw new BadRequestException("minPrice must be less than or equal to maxPrice");
+        }
     }
 
     @Transactional(readOnly = true)

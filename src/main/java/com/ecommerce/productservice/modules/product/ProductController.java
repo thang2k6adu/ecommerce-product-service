@@ -3,6 +3,7 @@ package com.ecommerce.productservice.modules.product;
 import com.ecommerce.productservice.common.api.ApiResponse;
 import com.ecommerce.productservice.common.api.PageResponse;
 import com.ecommerce.productservice.common.pagination.PageParams;
+import com.ecommerce.productservice.common.pagination.ProductFilterParams;
 import com.ecommerce.productservice.modules.product.dto.CreateProductRequest;
 import com.ecommerce.productservice.modules.product.dto.ProductResponse;
 import com.ecommerce.productservice.modules.productimage.ImageService;
@@ -51,8 +52,8 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProducts(
-            @ParameterObject PageParams pageParams) {
-        PageResponse<ProductResponse> response = productService.getAllProducts(pageParams);
+            @ParameterObject ProductFilterParams filterParams) {
+        PageResponse<ProductResponse> response = productService.getAllProducts(filterParams);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

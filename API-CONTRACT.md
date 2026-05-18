@@ -247,8 +247,19 @@ Content-Type: application/json
   - `size` default `20`
   - `sortBy` default `createdAt`
   - `sortDirection` default `desc`
+  - `keyword`: optional string; case-insensitive match on `name`, `slug`, or `sku`
+  - `categoryId`: optional UUID
+  - `brandId`: optional UUID
+  - `minPrice`: optional decimal
+  - `maxPrice`: optional decimal
+  - `featured`: optional boolean
+  - `published`: optional boolean
+  - `status`: optional enum (`DRAFT`, `PUBLISHED`, `ARCHIVED`, `OUT_OF_STOCK`)
 - Success: `200 OK`
 - Response: `ApiResponse<PageResponse<ProductResponse>>`
+- Notes:
+  - All provided filters are combined with logical AND.
+  - If `minPrice` and `maxPrice` are both provided, `minPrice` must be less than or equal to `maxPrice` or the API returns `400 Bad Request`.
 
 ### GET /api/products/published
 
